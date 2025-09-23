@@ -8,7 +8,7 @@ from .iterator import TartanAirIterator
 from .evaluator import TartanAirEvaluator
 from .reader import TartanAirTrajectoryReader
 from .dataloader import TartanAirDataLoader
-# from .random_accessor import TartanAirRandomAccessor
+from .random_accessor import TartanAirRandomAccessor
 
 print("TartanAir toolbox initialized.")
 
@@ -79,7 +79,8 @@ def init(tartanair_root):
     slowloader = TartanAirSlowLoaderCreator(tartanair_data_root)
 
     # global random_accessor
-    # random_accessor = TartanAirRandomAccessor(tartanair_data_root, trajectory_reader=traj_reader)
+    global random_accessor
+    random_accessor = TartanAirRandomAccessor(tartanair_data_root, trajectory_reader=traj_reader)
 
     global is_init 
     is_init = True
@@ -503,13 +504,12 @@ def evaluate_traj(est_traj,
                                    do_scale, 
                                    do_align)
 
-# def get_random_accessor():
-#     """
-#     Returns the random accessor object for the TartanAir dataset. The random accessor allows for random access to the dataset, and is useful for sampling new correspondences.
-
-#     :return: The random accessor object.
-#     :rtype: TartanAirRandomAccessor
-#     """
-#     global random_accessor
-#     check_init()
-#     return random_accessor
+def get_random_accessor():
+    """
+    Returns the random accessor object for the TartanAir dataset. The random accessor allows for random access to the dataset, and is useful for sampling new correspondences.
+    :return: The random accessor object.
+    :rtype: TartanAirRandomAccessor
+    """
+    global random_accessor
+    check_init()
+    return random_accessor

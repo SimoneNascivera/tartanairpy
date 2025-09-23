@@ -51,7 +51,7 @@ def generate_camera_model_object_from_config(config) -> CameraModel:
 
 def render_images_from_cubemap(cubemap_images, camera_model, rotation, image_modality=None, device="cpu"):
     
-    sampler = SixPlanarTorch(camera_model.fov_degree, camera_model, rotation)
+    sampler = SixPlanarTorch(camera_model, rotation)
     sampler.device = device
 
     rendered_output = {}

@@ -22,6 +22,7 @@ from .tartanair_module import TartanAirModule
 from .data_cacher.MultiDatasets import MultiDatasets
 from .image_resampling.mvs_utils.shape_struct import ShapeStruct
 from .image_resampling.mvs_utils.camera_models import CameraModel
+from .reader import TartanAirImageReader
 
 class TartanAirRandomAccessor(TartanAirModule):
     '''
@@ -147,10 +148,11 @@ class TartanAirRandomAccessor(TartanAirModule):
         ]
 
         self.reader = TartanAirCustomizer(tartanair_data_root)
-
-        self.MODALITY_TO_READER = {"image": self.reader.read_rgb, "depth": self.reader.read_dist, "seg": self.reader.read_seg}
+        self.image_reader = TartanAirImageReader()
+        
+        self.MODALITY_TO_READER = {"image": self.image_reader.read_rgb, "depth": self.image_reader.read_dist, "seg": self.image_reader.read_seg}
         self.MODALITY_TO_INTERPOLATION = {"image": "linear", "seg": "nearest", "depth": "blend"}
-        self.MODALITY_TO_WRITER = {"image": self.reader.write_as_is, "seg": self.reader.write_as_is, "depth": self.reader.write_float_depth}
+        self.MODALITY_TO_WRITER = {"image": self.image_reader.write_as_is, "seg": self.image_reader.write_as_is, "depth": self.image_reader.write_float_depth}
 
     def cache_tartanair_pose(self):
         path_dict = {}
@@ -159,7 +161,7 @@ class TartanAirRandomAccessor(TartanAirModule):
         # Prepare arguments for parallel execution
         args_list = []
         for _, row in self.TARTANAIR_METADATA_DF.iterrows():
-            for camera_side in ["lcam", "rcam"]:
+            for camera_side in ["lcam"]:#, "rcam"]:
                 args_list.append((row["env"], row["difficulty"], row["path_id"], camera_side))
         
         # Execute in parallel
@@ -228,7 +230,7 @@ class TartanAirRandomAccessor(TartanAirModule):
         results = {}
 
         for modality in modalities:
-            for direction in self.camera_directions:
+            for direction in self.CAMERA_DIRECTION_LIST:
                 thread = threading.Thread(target=self.load_image, args=(traj_folder, modality, direction, frame_idx, traj_idx, results))
                 threads.append(thread)
                 thread.start()
